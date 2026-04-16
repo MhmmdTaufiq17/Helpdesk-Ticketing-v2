@@ -202,15 +202,6 @@
                                 <div class="flex items-center gap-2">
                                     <span
                                         class="font-mono text-xs font-semibold text-indigo-500">{{ $ticket->ticket_code }}</span>
-
-                                    @if (isset($ticket->unread_user_replies) && $ticket->unread_user_replies > 0)
-                                        <span
-                                            class="relative inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 text-[11px] font-bold text-white bg-gradient-to-r from-red-500 to-rose-500 rounded-full shadow-sm shadow-red-200">
-                                            {{ $ticket->unread_user_replies }}
-                                            <span
-                                                class="absolute inset-0 rounded-full animate-ping opacity-30 bg-red-500"></span>
-                                        </span>
-                                    @endif
                                 </div>
                             </td>
                             <td class="px-4 py-3.5 max-w-xs">

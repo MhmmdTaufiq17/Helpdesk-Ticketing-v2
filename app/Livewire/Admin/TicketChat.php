@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Admin;
 
-use App\Events\AdminStatusChanged;
 use App\Events\NewChatMessage;
 use App\Events\TicketStatusChanged;
 use App\Models\Ticket;
@@ -34,40 +33,7 @@ class TicketChat extends Component
             $q->orderBy('created_at', 'asc');
         }])->findOrFail($ticketId);
 
-        $this->setAdminOnline();
         $this->loadMessages();
-    }
-
-    public function setAdminOnline()
-    {
-        if ($this->ticket) {
-            $this->ticket->update([
-                'last_active_admin_id' => Auth::id(),
-                'admin_last_active_at' => now(),
-            ]);
-
-            broadcast(new AdminStatusChanged(
-                $this->ticket->id,
-                Auth::user()->name,
-                true
-            ))->toOthers();
-        }
-    }
-
-    public function setAdminOffline()
-    {
-        if ($this->ticket && $this->ticket->last_active_admin_id === Auth::id()) {
-            $this->ticket->update([
-                'last_active_admin_id' => null,
-                'admin_last_active_at' => null,
-            ]);
-
-            broadcast(new AdminStatusChanged(
-                $this->ticket->id,
-                null,
-                false
-            ))->toOthers();
-        }
     }
 
     public function loadMessages()
@@ -180,8 +146,6 @@ class TicketChat extends Component
             // Juga dispatch ke component yang sama (untuk update lokal)
             $this->dispatch('ticket-status-updated', ticketId: $this->ticket->id);
         }
-
-        $this->setAdminOnline();
 
         broadcast(new NewChatMessage(
             $this->message,

@@ -17,13 +17,14 @@ class Ticket extends Model
         'category_id',
         'title',
         'description',
-        'ai_summary',        // ✅ BARU
+        // Kolom yang dihapus:
+        // 'ai_summary', ❌ DIHAPUS - pindah ke ai_suggestions table
+        // 'last_active_admin_id', ❌ DIHAPUS - tidak digunakan
+        // 'admin_last_active_at', ❌ DIHAPUS - tidak digunakan
+        // 'last_admin_read_at', ❌ DIHAPUS - tidak digunakan
         'attachment',
         'status',
         'priority',
-        'last_active_admin_id',
-        'admin_last_active_at',
-        'last_admin_read_at',
     ];
 
     protected static function boot()

@@ -7,7 +7,6 @@ use App\Models\TicketReply;
 use App\Models\User;
 use App\Events\NewChatMessage;
 use Livewire\Attributes\Locked;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class TicketChat extends Component
@@ -16,10 +15,6 @@ class TicketChat extends Component
     public $ticket;
     public $message = '';
     public $messages = [];
-
-    // Untuk status admin online
-    public $isAdminOnline = false;
-    public $lastAdminName = null;
 
     protected $rules = [
         'message' => 'required|string|max:2000',
@@ -36,7 +31,6 @@ class TicketChat extends Component
         }
 
         $this->loadMessages();
-        $this->loadAdminStatus();
     }
 
     public function loadMessages()
@@ -56,32 +50,6 @@ class TicketChat extends Component
                 'timestamp'   => $reply->created_at->toIso8601String(),
             ];
         })->toArray();
-    }
-
-    /**
-     * Load status admin - Cek admin yang sedang membuka tiket ini
-     */
-    public function loadAdminStatus()
-    {
-        // Cek apakah ada admin yang sedang membuka tiket ini
-        $activeAdminId = $this->ticket->last_active_admin_id;
-        $lastActiveAt = $this->ticket->admin_last_active_at;
-
-        if ($activeAdminId && $lastActiveAt) {
-            // Cek apakah masih aktif (last active kurang dari 2 menit)
-            $isStillActive = now()->diffInMinutes($lastActiveAt) < 2;
-
-            if ($isStillActive) {
-                $admin = User::find($activeAdminId);
-                $this->isAdminOnline = true;
-                $this->lastAdminName = $admin?->name;
-                return;
-            }
-        }
-
-        // Jika tidak ada admin yang aktif di tiket ini
-        $this->isAdminOnline = false;
-        $this->lastAdminName = null;
     }
 
     public function sendMessage()
@@ -139,21 +107,8 @@ class TicketChat extends Component
         $this->dispatch('scroll-to-bottom');
 
         // Refresh status admin setiap ada pesan baru dari admin
-        $this->loadAdminStatus();
-        $this->dispatch('admin-status-updated', isOnline: $this->isAdminOnline, adminName: $this->lastAdminName);
-    }
-
-    /**
-     * ✅ Listen ke broadcast event dari admin (online/offline)
-     */
-    #[On('echo:ticket.{ticket.id},.admin-status-changed')]
-    public function handleAdminStatusChanged($payload)
-    {
-        $this->isAdminOnline = $payload['isOnline'] ?? false;
-        $this->lastAdminName = $payload['adminName'] ?? null;
-
-        // Update UI
-        $this->dispatch('admin-status-updated', isOnline: $this->isAdminOnline, adminName: $this->lastAdminName);
+        // $this->loadAdminStatus(); // ❌ DIHAPUS - kolom admin status sudah tidak ada
+        // $this->dispatch('admin-status-updated', isOnline: $this->isAdminOnline, adminName: $this->lastAdminName);
     }
 
     public function render()

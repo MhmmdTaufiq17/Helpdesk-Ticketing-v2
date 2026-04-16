@@ -27,20 +27,5 @@ window.Echo = new Echo({
     debug: isDevelopment,
 });
 
-// WebSocket connection monitoring disabled
-// Export Echo untuk digunakan di komponen lain
-export default window.Echo;
-
-
-window.Echo = new Echo({
-    broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST,
-    wsPort: import.meta.env.VITE_REVERB_PORT,
-    forceTLS: false,
-    enabledTransports: ['ws', 'wss'],
-    disableStats: true,
-});
-
 // Log Pusher dinonaktifkan
 Pusher.logToConsole = false;

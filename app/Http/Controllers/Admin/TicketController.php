@@ -8,6 +8,7 @@ use App\Mail\TicketStatusChanged;
 use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\TicketReply;
+use App\Models\AiSuggestion;
 use App\Services\GroqAIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -44,20 +45,6 @@ class TicketController extends Controller
 
         $tickets = $query->paginate(15)->withQueryString();
 
-        // ✅ Hitung balasan user yang belum dibaca admin untuk setiap tiket
-        foreach ($tickets as $ticket) {
-            $lastAdminRead = $ticket->last_admin_read_at;
-
-            $unreadUserReplies = TicketReply::where('ticket_id', $ticket->id)
-                ->where('sender_type', 'user')
-                ->when($lastAdminRead, function ($q) use ($lastAdminRead) {
-                    $q->where('created_at', '>', $lastAdminRead);
-                })
-                ->count();
-
-            $ticket->unread_user_replies = $unreadUserReplies;
-        }
-
         $categories = Category::orderBy('category_name')->get();
 
         $counts = [
@@ -72,7 +59,7 @@ class TicketController extends Controller
 
     public function show($id, GroqAIService $aiService)
     {
-        $ticket = Ticket::with(['category', 'histories', 'replies.user'])->findOrFail($id);
+        $ticket = Ticket::with(['category', 'histories', 'replies.user', 'aiSuggestion'])->findOrFail($id);
 
         // ✅ AI ANALISIS (hanya jika priority masih null)
         if (is_null($ticket->priority)) {
@@ -91,10 +78,16 @@ class TicketController extends Controller
                     $ticket->category?->category_name
                 );
 
-                // Simpan ke database
-                $ticket->update([
-                    'priority' => strtolower($priority), // high/medium/low
+                // Simpan ke tabel ai_suggestions
+                AiSuggestion::create([
+                    'ticket_id' => $ticket->id,
                     'ai_summary' => $summary,
+                    'ai_suggested_priority' => strtolower($priority),
+                ]);
+
+                // Simpan priority ke ticket
+                $ticket->update([
+                    'priority' => strtolower($priority),
                 ]);
 
                 // Refresh data
@@ -108,11 +101,6 @@ class TicketController extends Controller
                 $ticket->update(['priority' => 'medium']);
             }
         }
-
-        // Tandai admin sudah membaca
-        $ticket->update([
-            'last_admin_read_at' => now(),
-        ]);
 
         // Cooldown
         $statusCooldownKey = 'status_update_'.$id.'_'.auth()->id();
