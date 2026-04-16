@@ -67,14 +67,14 @@
                         <div class="text-base font-semibold text-gray-800">{{ $user->getRoleLabelAttribute() }}</div>
                     </div>
 
-                    <div class="bg-gray-50 rounded-xl p-4">
+                    {{-- <div class="bg-gray-50 rounded-xl p-4">
                         <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Terakhir Aktif</div>
                         <div class="text-base font-semibold text-gray-800">
                             {{ $user->last_seen_at ? $user->last_seen_at->translatedFormat('d F Y, H:i') : 'Belum pernah login' }}
                         </div>
-                    </div>
+                    </div> --}}
 
-                    <div class="bg-gray-50 rounded-xl p-4">
+                    {{-- <div class="bg-gray-50 rounded-xl p-4">
                         <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Status Online</div>
                         <div class="flex items-center gap-2 mt-1">
                             @if ($user->is_online)
@@ -85,7 +85,7 @@
                                 <span class="text-sm font-medium text-gray-500">Offline</span>
                             @endif
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="bg-gray-50 rounded-xl p-4">
                         <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Tanggal Dibuat</div>

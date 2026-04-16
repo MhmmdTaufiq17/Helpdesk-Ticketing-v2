@@ -364,13 +364,13 @@
             </div>
 
             {{-- Remember + Forgot --}}
-            <div class="form-extras">
+            {{-- <div class="form-extras">
                 <label class="remember-label">
                     <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                     Ingat saya
                 </label>
                 <a href="#" class="forgot-link">Lupa password?</a>
-            </div>
+            </div> --}}
 
             {{-- Submit --}}
             <button type="submit" class="btn-login">
