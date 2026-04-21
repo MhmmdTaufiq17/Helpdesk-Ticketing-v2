@@ -8,7 +8,6 @@ ENV TZ=Asia/Jakarta
 RUN apt-get update && apt-get install -y \
     software-properties-common \
     build-essential \
-    libapache2-mod-php \
     apache2 \
     curl \
     git \
@@ -28,7 +27,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP 8.4 from Ondrej PPA (official PHP maintainer)
+# Install PHP 8.4 from Ondrej PPA
 RUN apt-get update && apt-get install -y \
     language-pack-en-base \
     && LC_ALL=en_US.UTF-8 add-apt-repository -y ppa:ondrej/php \
@@ -37,7 +36,7 @@ RUN apt-get update && apt-get install -y \
     php8.4 \
     php8.4-cli \
     php8.4-common \
-    php8.4-apache \
+    libapache2-mod-php8.4 \
     php8.4-mysql \
     php8.4-pgsql \
     php8.4-sqlite3 \
@@ -63,8 +62,8 @@ WORKDIR /var/www/html
 # Copy application
 COPY . .
 
-# Install PHP dependencies (skip platform requirements check)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=php
+# Install PHP dependencies (skip platform requirements)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=php --ignore-platform-req=ext-gd
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
