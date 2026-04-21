@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->string('ticket_code', 10)->unique();
+            $table->string('ticket_code', 80)->unique();
             $table->string('client_name');
             $table->string('client_email');
             $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
