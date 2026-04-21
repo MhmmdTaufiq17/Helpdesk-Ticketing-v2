@@ -4,11 +4,12 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Jakarta
 
-# Install dependencies
+# Install dependencies and Apache
 RUN apt-get update && apt-get install -y \
     software-properties-common \
     build-essential \
     apache2 \
+    apache2-utils \
     curl \
     git \
     libpng-dev \
@@ -62,7 +63,7 @@ WORKDIR /var/www/html
 # Copy application
 COPY . .
 
-# Install PHP dependencies (skip platform requirements)
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=php --ignore-platform-req=ext-gd
 
 # Set permissions
@@ -75,5 +76,5 @@ RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start Apache (using apachectl -D FOREGROUND instead)
+CMD ["apachectl", "-D", "FOREGROUND"]
