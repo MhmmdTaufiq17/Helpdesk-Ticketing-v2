@@ -4,7 +4,7 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Jakarta
 
-# Install dependencies and Apache
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     software-properties-common \
     build-essential \
@@ -51,6 +51,10 @@ RUN apt-get update && apt-get install -y \
     php8.4-exif \
     && apt-get clean
 
+# Disable conflicting MPM modules
+RUN a2dismod mpm_event mpm_worker || true
+RUN a2enmod mpm_prefork
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -76,5 +80,5 @@ RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
 
 EXPOSE 80
 
-# Start Apache (using apachectl -D FOREGROUND instead)
-CMD ["apachectl", "-D", "FOREGROUND"]
+# Start Apache
+CMD ["apache2ctl", "-D", "FOREGROUND"]
