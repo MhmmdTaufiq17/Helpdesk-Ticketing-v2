@@ -13,7 +13,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['admin'])->default('admin');
+            // ✅ LANGSUNG PAKAI ENUM YANG SUDAH DIUPDATE
+            $table->enum('role', ['super_admin', 'admin'])->default('admin');
             $table->timestamps();
         });
     }
@@ -22,4 +23,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
     }
-};  
+};

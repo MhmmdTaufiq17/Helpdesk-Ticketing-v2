@@ -12,7 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ticket_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->enum('sender_type', ['client', 'admin', 'system'])->default('client');
+            // ✅ LANGSUNG PAKAI ENUM YANG SUDAH DIUPDATE
+            $table->enum('sender_type', ['admin', 'user'])->default('user');
             $table->text('message');
             $table->timestamps();
 
