@@ -250,7 +250,7 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input type="text" id="adminQuickSearch" placeholder="Cari kode tiket..."
+                        <input type="text" id="adminQuickSearch" placeholder="Cari kode, judul, nama, email…"
                             class="pl-10 pr-4 py-2 bg-slate-100 border-transparent focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-[#5b5ef4] rounded-xl text-sm w-64 transition-all outline-none">
                     </div>
 

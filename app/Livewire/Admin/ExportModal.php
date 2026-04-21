@@ -8,6 +8,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -44,14 +45,16 @@ class ExportModal extends Component
                     // Simpan sementara ke storage
                     $filePath = 'exports/'.$fileName.'.xlsx';
                     Excel::store(new TicketsReportExport, $filePath, 'public');
-                    $this->dispatch('download-file', url('storage/'.$filePath));
+                    $downloadUrl = \Storage::disk('public')->url($filePath);
+                    $this->dispatch('download-file', $downloadUrl);
                     break;
 
                 case 'csv':
                     $csvContent = $this->generateCsv();
                     $filePath = 'exports/'.$fileName.'.csv';
                     \Storage::disk('public')->put($filePath, $csvContent);
-                    $this->dispatch('download-file', url('storage/'.$filePath));
+                    $downloadUrl = \Storage::disk('public')->url($filePath);
+                    $this->dispatch('download-file', $downloadUrl);
                     break;
 
                 case 'pdf':
@@ -59,7 +62,8 @@ class ExportModal extends Component
                     $pdf = Pdf::loadView('admin.reports.export-pdf', $data);
                     $filePath = 'exports/'.$fileName.'.pdf';
                     \Storage::disk('public')->put($filePath, $pdf->output());
-                    $this->dispatch('download-file', url('storage/'.$filePath));
+                    $downloadUrl = \Storage::disk('public')->url($filePath);
+                    $this->dispatch('download-file', $downloadUrl);
                     break;
             }
 
