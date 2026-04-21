@@ -1,65 +1,59 @@
 FROM ubuntu:22.04
 
-# Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Jakarta
 
-# Install dependencies
+# Install Nginx, PHP 8.4, and dependencies
 RUN apt-get update && apt-get install -y \
-    software-properties-common \
-    build-essential \
-    apache2 \
-    apache2-utils \
+    nginx \
     curl \
     git \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
     unzip \
-    libzip-dev \
-    libsqlite3-dev \
-    libcurl4-openssl-dev \
-    libfreetype-dev \
-    libjpeg-dev \
-    libwebp-dev \
-    libxpm-dev \
-    libicu-dev \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install PHP 8.4 from Ondrej PPA
-RUN apt-get update && apt-get install -y \
-    language-pack-en-base \
-    && LC_ALL=en_US.UTF-8 add-apt-repository -y ppa:ondrej/php \
+    software-properties-common \
+    && add-apt-repository -y ppa:ondrej/php \
     && apt-get update \
     && apt-get install -y \
-    php8.4 \
+    php8.4-fpm \
     php8.4-cli \
-    php8.4-common \
-    libapache2-mod-php8.4 \
     php8.4-mysql \
     php8.4-pgsql \
-    php8.4-sqlite3 \
     php8.4-mbstring \
     php8.4-xml \
     php8.4-curl \
     php8.4-zip \
     php8.4-gd \
-    php8.4-intl \
     php8.4-bcmath \
     php8.4-exif \
+    php8.4-intl \
     && apt-get clean
-
-# Disable conflicting MPM modules
-RUN a2dismod mpm_event mpm_worker || true
-RUN a2enmod mpm_prefork
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Configure Nginx for Laravel
+RUN rm /etc/nginx/sites-enabled/default
+RUN echo 'server {
+    listen 80;
+    server_name _;
+    root /var/www/html/public;
+
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}' > /etc/nginx/sites-available/laravel
+
+RUN ln -s /etc/nginx/sites-available/laravel /etc/nginx/sites-enabled/
 
 # Set working directory
 WORKDIR /var/www/html
@@ -75,10 +69,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Configure Apache
-RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
-
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2ctl", "-D", "FOREGROUND"]
+# Start PHP-FPM and Nginx
+CMD service php8.4-fpm start && nginx -g "daemon off;"
