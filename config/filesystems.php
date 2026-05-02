@@ -41,8 +41,8 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => env('APP_ENV') === 'production'
-                ? str_replace('http://', 'https://', rtrim(env('APP_URL', 'http://localhost'), '/')).'/storage'
-                : rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+                ? str_replace('https://', 'https://', rtrim(env('APP_URL', 'https://localhost'), '/')).'/storage'
+                : rtrim(env('APP_URL', 'https://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

@@ -117,8 +117,12 @@
                     <textarea wire:model="message" wire:keydown.enter="sendMessage" maxlength="2000"
                         placeholder="Ketik balasan untuk {{ $ticket->client_name }}..."
                         class="w-full bg-transparent text-[13px] text-slate-800 outline-none resize-none max-h-32 min-h-[40px] py-1.5"
-                        rows="1" x-data="{ resize() { $el.style.height = '40px';
-                                $el.style.height = $el.scrollHeight + 'px' } }" x-init="resize()" @input="resize()">
+                        rows="1" x-data="{
+                            resize() {
+                                $el.style.height = '40px';
+                                $el.style.height = $el.scrollHeight + 'px'
+                            }
+                        }" x-init="resize()" @input="resize()">
                     </textarea>
                 </div>
 
@@ -136,7 +140,7 @@
                     </span>
 
                     <span wire:loading wire:target="generateAIReply">
-                        <svg class="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        <svg class="w-5 h-5 animate-spin" xmlns="https://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                 stroke-width="4"></circle>
@@ -160,7 +164,7 @@
                     </span>
 
                     <span wire:loading wire:target="sendMessage">
-                        <svg class="w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        <svg class="w-5 h-5 animate-spin" xmlns="https://www.w3.org/2000/svg" fill="none"
                             viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                 stroke-width="4"></circle>

@@ -185,7 +185,7 @@ class GroqAIService
         }
 
         try {
-            $response = Http::withHeaders([
+            $response = https::withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type'  => 'application/json',
             ])->timeout(30)->post($this->apiUrl, [
