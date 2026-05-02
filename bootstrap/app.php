@@ -12,9 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust forwarded headers from proxies, especially when running behind Railway / HTTPS proxy.
+        $middleware->prepend([
+            \Illuminate\Http\Middleware\TrustProxies::class,
+        ]);
+
         // Register custom middleware alias
         $middleware->alias([
-            'auth' => \App\Http\Middleware\Authenticate::class, 
+            'auth' => \App\Http\Middleware\Authenticate::class,
             'session.timeout' => \App\Http\Middleware\CheckSessionTimeout::class,
             'admin' => \App\Http\Middleware\AdminAuthenticate::class,
             'admin.role' => \App\Http\Middleware\CheckAdminRole::class,
